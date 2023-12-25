@@ -3,3 +3,4 @@ pandas>2.0
 numpy<=1.25.1
 yfinance == 0.2.33
 plotly == 5.18.0
+googletrans == 3.0.0
