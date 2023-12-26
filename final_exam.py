@@ -81,17 +81,22 @@ def plot_interactive_candlestick(stock_data):
                                          high=stock_data['High'],
                                          low=stock_data['Low'],
                                          close=stock_data['Close'])])
-
     #計算mav
-    mav5 = stock_data['Close'].rolling(window=5).mean()  # 20日mav
-    mav10 = stock_data['Close'].rolling(window=10).mean()  # 50日mav
+    mav5 = stock_data['Close'].rolling(window=5).mean()  # 5日mav
+    mav10 = stock_data['Close'].rolling(window=10).mean()  # 10日mav
+    mav15 = stock_data['Close'].rolling(window=15).mean()  # 15日mav
     mav20 = stock_data['Close'].rolling(window=20).mean()  # 20日mav
-
+    mav25 = stock_data['Close'].rolling(window=25).mean()  # 25日mav
+    mav30 = stock_data['Close'].rolling(window=30).mean()  # 30日mav
+    
     #添加mav
     fig.add_trace(go.Scatter(x=stock_data.index, y=mav5, mode='lines', name='MAV-5'))
     fig.add_trace(go.Scatter(x=stock_data.index, y=mav10, mode='lines', name='MAV-10'))
+    fig.add_trace(go.Scatter(x=stock_data.index, y=mav15, mode='lines', name='MAV-15'))
     fig.add_trace(go.Scatter(x=stock_data.index, y=mav20, mode='lines', name='MAV-20'))
-
+    fig.add_trace(go.Scatter(x=stock_data.index, y=mav25, mode='lines', name='MAV-25'))
+    fig.add_trace(go.Scatter(x=stock_data.index, y=mav30, mode='lines', name='MAV-30'))
+    
     fig.update_layout(xaxis_rangeslider_visible=False, xaxis_title='日期', yaxis_title='價格',title='K線圖')
     st.plotly_chart(fig, use_container_width=True)  
 
@@ -289,10 +294,27 @@ pytrend = TrendReq()
 max_retries = 3
 
 #關鍵字熱搜
+from pytrends.request import TrendReq
+
 def fetch_google_trends(keywords, start_date, end_date, timezone):
-    pytrend = TrendReq(hl='en-US' if timezone == 'New York' else 'zh-TW', tz=-300 if timezone == 'New York' else 480)
-    pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}')
+    # 根据时区设置语言和地理位置
+    if timezone == "台北":
+        hl = 'zh-TW'
+        geo = 'TW'
+    elif timezone == "紐約":
+        hl = 'en-US'
+        geo = 'US-NY'
+        
+    # 创建 TrendReq 对象
+    pytrend = TrendReq(hl=hl)
+
+    # 构建请求负载
+    pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
+
+    # 获取兴趣随时间变化的数据
     return pytrend.interest_over_time()
+
+
 
 # Streamlit介面
 st.title('金融數據平台')
@@ -531,7 +553,7 @@ elif options == '熱搜趨勢':
     st.subheader('熱搜趨勢')
     
     timezone = st.selectbox("選擇時區", ["台北", "紐約"])
-    keywords = st.text_input('請輸入關鍵詞，用逗號分隔')
+    keywords = st.text_input('請輸入關鍵詞，用逗號分隔(最多輸入5個)')
     start_date = st.date_input('開始日期')
     end_date = st.date_input('結束日期')
     
@@ -541,22 +563,24 @@ elif options == '熱搜趨勢':
         
         if not data.empty:
             # 轉換為 DataFrame 並顯示
+            st.subheader("總數據顯示")
             df = pd.DataFrame(data)
             st.write(df)
-            
+                   
             # 創建並顯示折線圖
             fig_line = go.Figure()
             for keyword in kw_list:
                 fig_line.add_trace(go.Scatter(x=df.index, y=df[keyword], mode='lines', name=keyword))
-            fig_line.update_layout(title='Google Trends 折線圖', xaxis_title='日期', yaxis_title='關鍵字')
+            fig_line.update_layout(title='Google Trends 總數據折線圖', xaxis_title='日期', yaxis_title='關鍵字')
             st.plotly_chart(fig_line)
             
             # 創建並顯示柱狀圖
             fig_bar = go.Figure()
             for keyword in kw_list:
                 fig_bar.add_trace(go.Bar(x=df.index, y=df[keyword], name=keyword))
-            fig_bar.update_layout(title='Google Trends 柱狀圖', xaxis_title='日期', yaxis_title='關鍵字')
+            fig_bar.update_layout(title='Google Trends 總數據柱狀圖', xaxis_title='日期', yaxis_title='關鍵字')
             st.plotly_chart(fig_bar)
+
         else:
             st.write("無數據可用")
 
@@ -564,4 +588,3 @@ elif options == '使用者意見反饋':
     st.subheader('使用者意見反饋')
     st.text('如有使用疑問或需要改善、希望增加功能地方請至下方連結填寫')
     st.write("https://forms.gle/RXJo9YX7UtkCvt9bA")
-    
