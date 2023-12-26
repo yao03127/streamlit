@@ -345,14 +345,14 @@ options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財
 
 if options == '公司基本資訊':
     st.subheader('公司基本資訊')
-    symbol = st.text_input('輸入股票(台股請加上.tw)').upper()
+    symbol = st.text_input('輸入股票(台股/上市 請加上.tw,台股/上櫃 請加上.two)').upper()
     if st.button('查詢'):
         fundamentals = get_company_fundamentals(symbol)
         display_fundamentals(fundamentals)
        
 elif options == '公司財報查詢(中文)':
     st.header('公司財報查詢(中文)')
-    symbol = st.text_input('輸入股票(台股請加上.tw)').upper()
+    symbol = st.text_input('輸入股票(台股/上市 請加上.tw,台股/上櫃 請加上.two)').upper()
     translator = Translator()
     if st.button('查詢'):
         balance_sheet, income_statement, cash_flow = get_financial_statements(symbol)
@@ -367,7 +367,7 @@ elif options == '公司財報查詢(中文)':
             
 elif options == '公司財報查詢(英文)':
     st.header('公司財報查詢(英文)')
-    symbol = st.text_input('輸入股票代碼(台股請加上.tw)').upper()
+    symbol = st.text_input('輸入股票代碼(台股/上市 請加上.tw,台股/上櫃 請加上.two)').upper()
     if st.button('查詢'):
         balance_sheet, income_statement, cash_flow = get_financial_statements(symbol)
         if balance_sheet is not None:
@@ -381,7 +381,7 @@ elif options == '公司財報查詢(英文)':
 
 elif options == '交易數據':
     st.subheader('交易數據查詢')
-    symbol = st.text_input('輸入股票(台股請加上.tw)', key='single_stock').upper()
+    symbol = st.text_input('輸入股票(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='single_stock').upper()
     start_date_single = st.date_input('開始日期', key='start_date_single')
     end_date_single = st.date_input('结束日期', key='end_date_single')
     if st.button('查詢'):
@@ -393,12 +393,12 @@ elif options == '交易數據':
         else:
             st.error("無法獲取交易數據")
     st.subheader('個股比較')
-    symbol1 = st.text_input('輸入股票 1(台股請加上.tw)', key='stock1')
-    symbol2 = st.text_input('輸入股票 2(台股請加上.tw)', key='stock2')
-    symbol3 = st.text_input('輸入股票 3(台股請加上.tw)', key='stock3')
-    symbol4 = st.text_input('輸入股票 4(台股請加上.tw)', key='stock4')
-    symbol5 = st.text_input('輸入股票 5(台股請加上.tw)', key='stock5')
-    symbol6 = st.text_input('輸入股票 6(台股請加上.tw)', key='stock6')
+    symbol1 = st.text_input('輸入股票 1(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock1')
+    symbol2 = st.text_input('輸入股票 2(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock2')
+    symbol3 = st.text_input('輸入股票 3(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock3')
+    symbol4 = st.text_input('輸入股票 4(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock4')
+    symbol5 = st.text_input('輸入股票 5(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock5')
+    symbol6 = st.text_input('輸入股票 6(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock6')
     start_date_multi = st.date_input('開始日期', key='start_date_multi')
     end_date_multi = st.date_input('結束日期', key='end_date_multi')
     if st.button('比較'):
@@ -465,12 +465,12 @@ elif options == '今日熱門':
         else:
             st.error("無法獲取交易數據")
     st.subheader('個股比較')
-    symbol1 = st.text_input('輸入股票 1(台股請加上.tw)', key='stock1')
-    symbol2 = st.text_input('輸入股票 2(台股請加上.tw)', key='stock2')
-    symbol3 = st.text_input('輸入股票 3(台股請加上.tw)', key='stock3')
-    symbol4 = st.text_input('輸入股票 4(台股請加上.tw)', key='stock4')
-    symbol5 = st.text_input('輸入股票 5(台股請加上.tw)', key='stock5')
-    symbol6 = st.text_input('輸入股票 6(台股請加上.tw)', key='stock6')
+    symbol1 = st.text_input('輸入股票 1(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock1')
+    symbol2 = st.text_input('輸入股票 2(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock2')
+    symbol3 = st.text_input('輸入股票 3(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock3')
+    symbol4 = st.text_input('輸入股票 4(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock4')
+    symbol5 = st.text_input('輸入股票 5(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock5')
+    symbol6 = st.text_input('輸入股票 6(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock6')
     start_date_multi = st.date_input('開始日期', key='start_date_multi')
     end_date_multi = st.date_input('結束日期', key='end_date_multi')
     if st.button('比較'):
@@ -487,7 +487,7 @@ elif options == '熱門ETF':
     st.subheader('熱門ETF')
     etf()
     st.subheader('ETF查詢')
-    symbol = st.text_input('輸入ETF (台股請加上.tw)', key='single_stock').upper()
+    symbol = st.text_input('輸入ETF (台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='single_stock').upper()
     start_date_single = st.date_input('開始日期', key='start_date_single')
     end_date_single = st.date_input('结束日期', key='end_date_single')
     if st.button('查詢'):
@@ -499,12 +499,12 @@ elif options == '熱門ETF':
         else:
             st.error("無法獲取ETF")
     st.subheader('ETF比較')
-    symbol1 = st.text_input('輸入ETF 1(台股請加上.tw)', key='stock1')
-    symbol2 = st.text_input('輸入ETF 2(台股請加上.tw)', key='stock2')
-    symbol3 = st.text_input('輸入ETF 3(台股請加上.tw)', key='stock3')
-    symbol4 = st.text_input('輸入ETF 4(台股請加上.tw)', key='stock4')
-    symbol5 = st.text_input('輸入ETF 5(台股請加上.tw)', key='stock5')
-    symbol6 = st.text_input('輸入ETF 6(台股請加上.tw)', key='stock6')
+    symbol1 = st.text_input('輸入ETF 1(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock1')
+    symbol2 = st.text_input('輸入ETF 2(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock2')
+    symbol3 = st.text_input('輸入ETF 3(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock3')
+    symbol4 = st.text_input('輸入ETF 4(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock4')
+    symbol5 = st.text_input('輸入ETF 5(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock5')
+    symbol6 = st.text_input('輸入ETF 6(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock6')
     start_date_multi = st.date_input('開始日期', key='start_date_multi')
     end_date_multi = st.date_input('結束日期', key='end_date_multi')
     if st.button('比較'):
