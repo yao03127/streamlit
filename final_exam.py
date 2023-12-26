@@ -415,7 +415,7 @@ elif options == '世界指數':
     st.subheader('世界指數')
     world_index()
     st.subheader('指數查詢')
-    symbol = st.text_input('輸入指數 1(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='single_stock').upper()
+    symbol = st.text_input('輸入指數 (要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='single_stock').upper()
     start_date_single = st.date_input('開始日期', key='start_date_single')
     end_date_single = st.date_input('结束日期', key='end_date_single')
     if st.button('查詢'):
@@ -453,7 +453,7 @@ elif options == '今日熱門':
     st.subheader('今日下跌')
     loser_stock()   
     st.subheader('股票查詢')
-    symbol = st.text_input('輸入股票(台股請加上.tw)', key='single_stock').upper()
+    symbol = st.text_input('輸入股票(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='single_stock').upper()
     start_date_single = st.date_input('開始日期', key='start_date_single')
     end_date_single = st.date_input('结束日期', key='end_date_single')
     if st.button('查詢'):
@@ -530,7 +530,7 @@ elif options == '貨幣市場':
             plot_interactive_candlestick(stock_data)
             plot_interactive_trend(stock_data)
         else:
-            st.error("無法獲取ETF")
+            st.error("無法獲取貨幣")
     st.subheader('貨幣比較')
     symbol1 = st.text_input('輸入貨幣 1(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock1')
     symbol2 = st.text_input('輸入貨幣 2(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock2')
