@@ -294,27 +294,20 @@ pytrend = TrendReq()
 max_retries = 3
 
 #關鍵字熱搜
-from pytrends.request import TrendReq
-
 def fetch_google_trends(keywords, start_date, end_date, timezone):
-    # 根据时区设置语言和地理位置
+    # 根據時區設置
     if timezone == "台北":
         hl = 'zh-TW'
         geo = 'TW'
     elif timezone == "紐約":
         hl = 'en-US'
         geo = 'US-NY'
-        
-    # 创建 TrendReq 对象
-    pytrend = TrendReq(hl=hl)
-
-    # 构建请求负载
-    pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
-
-    # 获取兴趣随时间变化的数据
-    return pytrend.interest_over_time()
-
-
+    # 創建 TrendReq 對象
+pytrend = TrendReq(hl=hl)
+# 建立請求負載
+pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
+# 獲取隨時間變化的興趣
+return pytrend.interest_over_time()
 
 # Streamlit介面
 st.title('金融數據平台')
@@ -553,12 +546,17 @@ elif options == '熱搜趨勢':
     st.subheader('熱搜趨勢')
     
     timezone = st.selectbox("選擇時區", ["台北", "紐約"])
-    keywords = st.text_input('請輸入關鍵詞，用逗號分隔(最多輸入5個)')
+    
+    keyword1 = st.text_input('請輸入第一個關鍵詞')
+    keyword2 = st.text_input('請輸入第二個關鍵詞')
+    keyword3 = st.text_input('請輸入第三個關鍵詞')
+    keyword4 = st.text_input('請輸入第四個關鍵詞')
+    keyword5 = st.text_input('請輸入第五個關鍵詞')
     start_date = st.date_input('開始日期')
     end_date = st.date_input('結束日期')
     
     if st.button('獲取數據'):
-        kw_list = keywords.split(',')
+        kw_list = [k for k in [keyword1, keyword2, keyword3, keyword4, keyword5] if k]
         data = fetch_google_trends(kw_list, start_date, end_date, timezone)
         
         if not data.empty:
