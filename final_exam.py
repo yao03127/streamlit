@@ -302,12 +302,15 @@ def fetch_google_trends(keywords, start_date, end_date, timezone):
     elif timezone == "紐約":
         hl = 'en-US'
         geo = 'US-NY'
+        
     # 創建 TrendReq 對象
-pytrend = TrendReq(hl=hl)
-# 建立請求負載
-pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
-# 獲取隨時間變化的興趣
-return pytrend.interest_over_time()
+    pytrend = TrendReq(hl=hl)
+
+    # 建立請求負載
+    pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
+
+    # 獲取隨時間變化的興趣
+    return pytrend.interest_over_time()
 
 # Streamlit介面
 st.title('金融數據平台')
