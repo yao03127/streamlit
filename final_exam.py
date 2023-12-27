@@ -73,6 +73,17 @@ def get_stock_data_us(symbol,start_date,end_date):
     except Exception as e:
         st.error(f"無法獲取交易數據：{str(e)}")
         return None
+   
+#獲取歷史交易數據
+def get_coin_data_us(symbol,start_date,end_date):
+    try:
+        stock_data = yf.download(symbol,start=start_date,end=end_date)
+        stock_data = stock_data.drop('Volume', axis=1)
+        st.write("交易數據:", stock_data)
+        return stock_data
+    except Exception as e:
+        st.error(f"無法獲取交易數據：{str(e)}")
+        return None
 
 #繪製k線圖
 def plot_interactive_candlestick(stock_data):
@@ -202,6 +213,17 @@ def get_stock_data_us_vs(symbols,start_date,end_date):
     except Exception as e:
         st.error(f"無法獲取交易數據: {str(e)}")
         return None
+    
+#貨幣比較
+def get_coin_data_us_vs(symbols,start_date,end_date):
+    try:
+        stock_data_us = yf.download(symbols, start=start_date, end=end_date)
+        stock_data_us = stock_data_us.drop(['Open', 'High','Low','Adj Close','Volume'], axis=1)
+        st.write("交易數據:", stock_data_us)
+        return stock_data_us
+    except Exception as e:
+        st.error(f"無法獲取交易數據: {str(e)}")
+        return None
 
 def plot_stock_trend_comparison(stock_data,symbols):
     fig = go.Figure()
@@ -314,26 +336,21 @@ def fetch_google_trends(keywords, start_date, end_date, timezone):
 
 # Streamlit介面
 st.title('金融數據平台')
-st.header("歡迎使用金融數據平台", divider="rainbow")
-st.subheader("功能介紹")
+st.header("使用說明", divider="rainbow")
 
 st.markdown('''
-            1.公司基本資訊: 查詢公司基本資料          
-            2.公司財報查詢(中文): 查詢公司三大財務報表(中文版)        
-            3.公司財報查詢(英文): 查詢公司三大財務報表(英文版)        
-            4.交易數據:查詢股票交易數據、比較股票交易數據      
-            5.世界指數:查詢指數數據、比較指數數據        
-            6.今日熱門:查看今日熱門、上漲、下跌股票數據、查詢股票交易數據、比較股票交易數據   
-            7.熱門ETF:查看熱門ETF、查詢ETF交易數據、比較ETF交易數據     
-            8.貨幣市場:查看貨幣市場、查詢貨幣交易數據、比較貨幣交易數據    
-            9.熱搜趨勢:查看關鍵字熱搜趨勢      
-            10.使用者意見反饋:使用者體驗感受回饋或需要改善地方、希望增加功能  
-            備註1.財報使用GOOGLE翻譯，因此可能會有專有名詞出現翻譯錯誤          
-            備註2.K線圖請以美股角度來觀看           
-            美股:綠漲、紅跌        
-            台股:綠跌、紅漲  
-            備註3.由於Google Trends API 有請求上限因此在"熱搜趨勢"搜尋時，出現亂碼純屬正常現象    
-            ''')
+    1. 財報使用 GOOGLE 翻譯，因此可能會有專有名詞出現翻譯錯誤        
+    2. K 線圖請以美股角度來觀看      
+        - 美股: 綠漲、紅跌        
+        - 台股: 綠跌、紅漲        
+    3. 貨幣輸入格式  
+        - 美元換其他: 直接輸入貨幣縮寫  
+        - 其他換美元: 貨幣縮寫 USD，例如，台幣換美金: TWDUSD  
+        - 其他換其他: 貨幣縮寫貨幣縮寫，例如，台幣換英鎊: TWDGBP  
+    4. 由於 Google Trends API 有請求上限因此在 "熱搜趨勢" 搜尋時，出現亂碼純屬正常現象  
+    5. 本平台僅適用於數據搜尋，不建議任何投資行為                    
+''')
+
             
 #狀態列
 st.sidebar.title('選單')
@@ -423,12 +440,12 @@ elif options == '世界指數':
         else:
             st.error("無法獲取指數")
     st.subheader('指數比較')
-    symbol1 = st.text_input('輸入指數 1(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='stock1')
-    symbol2 = st.text_input('輸入指數 2(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='stock2')
-    symbol3 = st.text_input('輸入指數 3(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='stock3')
-    symbol4 = st.text_input('輸入指數 4(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='stock4')
-    symbol5 = st.text_input('輸入指數 5(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='stock5')
-    symbol6 = st.text_input('輸入指數 6(要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='stock6')
+    symbol1 = st.text_input('輸入指數 1(要跟上面symbol欄位一樣)', key='stock1')
+    symbol2 = st.text_input('輸入指數 2(要跟上面symbol欄位一樣)', key='stock2')
+    symbol3 = st.text_input('輸入指數 3(要跟上面symbol欄位一樣)', key='stock3')
+    symbol4 = st.text_input('輸入指數 4(要跟上面symbol欄位一樣)', key='stock4')
+    symbol5 = st.text_input('輸入指數 5(要跟上面symbol欄位一樣)', key='stock5')
+    symbol6 = st.text_input('輸入指數 6(要跟上面symbol欄位一樣)', key='stock6')
     start_date_multi = st.date_input('開始日期', key='start_date_multi')
     end_date_multi = st.date_input('結束日期', key='end_date_multi')
     if st.button('比較'):
@@ -517,29 +534,30 @@ elif options == '貨幣市場':
     st.subheader('貨幣市場')
     coin()
     st.subheader('貨幣查詢')
-    symbol = st.text_input('輸入貨幣 (輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='single_stock').upper()
+    symbol_input = st.text_input('輸入貨幣', key='single_stock')
+    symbol = (symbol_input + '=x').upper() if symbol_input else ''
     start_date_single = st.date_input('開始日期', key='start_date_single')
     end_date_single = st.date_input('结束日期', key='end_date_single')
     if st.button('查詢'):
-        stock_data = get_stock_data_us(symbol,start_date_single,end_date_single)
+        stock_data = get_coin_data_us(symbol,start_date_single,end_date_single)
         if stock_data is not None:
             plot_interactive_candlestick(stock_data)
             plot_interactive_trend(stock_data)
         else:
             st.error("無法獲取貨幣")
     st.subheader('貨幣比較')
-    symbol1 = st.text_input('輸入貨幣 1(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock1')
-    symbol2 = st.text_input('輸入貨幣 2(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock2')
-    symbol3 = st.text_input('輸入貨幣 3(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock3')
-    symbol4 = st.text_input('輸入貨幣 4(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock4')
-    symbol5 = st.text_input('輸入貨幣 5(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock5')
-    symbol6 = st.text_input('輸入貨幣 6(輸入格式:貨幣=x(美元/其他) 或 貨幣貨幣=x)', key='stock6')
+    symbol1 = st.text_input('輸入貨幣 1', key='stock1')
+    symbol2 = st.text_input('輸入貨幣 2', key='stock2')
+    symbol3 = st.text_input('輸入貨幣 3', key='stock3')
+    symbol4 = st.text_input('輸入貨幣 4', key='stock4')
+    symbol5 = st.text_input('輸入貨幣 5', key='stock5')
+    symbol6 = st.text_input('輸入貨幣 6', key='stock6')
     start_date_multi = st.date_input('開始日期', key='start_date_multi')
     end_date_multi = st.date_input('結束日期', key='end_date_multi')
     if st.button('比較'):
-        symbols = [s.upper() for s in [symbol1, symbol2, symbol3, symbol4, symbol5, symbol6] if s]
+        symbols = [(s + '=x').upper() for s in [symbol1, symbol2, symbol3, symbol4, symbol5, symbol6] if s]
         if symbols:
-            stock_data = get_stock_data_us_vs(symbols,start_date_multi,end_date_multi)
+            stock_data = get_coin_data_us_vs(symbols,start_date_multi,end_date_multi)
             if stock_data is not None:
                 plot_stock_trend_comparison(stock_data,symbols)
         else:
