@@ -208,6 +208,7 @@ def display_cash_flow_en(cash_flow):
 def get_stock_data_us_vs(symbols,start_date,end_date):
     try:
         stock_data_us = yf.download(symbols, start=start_date, end=end_date)
+        stock_data_us = stock_data_us.drop(['Open', 'High','Low','Adj Close','Volume'], axis=1)
         st.write("交易數據:", stock_data_us)
         return stock_data_us
     except Exception as e:
@@ -218,7 +219,7 @@ def get_stock_data_us_vs(symbols,start_date,end_date):
 def get_coin_data_us_vs(symbols,start_date,end_date):
     try:
         stock_data_us = yf.download(symbols, start=start_date, end=end_date)
-        stock_data_us = stock_data_us.drop(['Open', 'High','Low','Adj Close','Volume'], axis=1)
+        stock_data_us = stock_data_us.drop(['Open', 'High','Low','Adj Close'], axis=1)
         st.write("交易數據:", stock_data_us)
         return stock_data_us
     except Exception as e:
