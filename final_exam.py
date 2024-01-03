@@ -281,17 +281,6 @@ def plot_stock_volume_chart(stock_data,symbols):
     fig.update_layout(title='交易量比較直方圖', xaxis_title='日期', yaxis_title='交易量')
     st.plotly_chart(fig, use_container_width=True)
 
-#世界指數
-def world_index():
-    url = "https://finance.yahoo.com/world-indices/"
-    world_index = res.get(url)
-    f = io.StringIO(world_index.text)
-    world_index_df = pd.read_html(f)
-    world_index_df = world_index_df[0]
-    world_index_df = world_index_df.drop(columns=['Intraday High/Low', '52 Week Range','Day Chart'])
-    st.write(world_index_df)
-    return world_index_df
-
 #今日熱門
 def hot_stock():
     url = "https://finance.yahoo.com/most-active/"
@@ -324,17 +313,6 @@ def loser_stock():
     loser_stock_df = loser_stock_df.drop(columns=['PE Ratio (TTM)', '52 Week Range'])
     st.write(loser_stock_df)
     return loser_stock_df
-
-#熱門etf
-def etf():
-    url = "https://finance.yahoo.com/etfs/"
-    etf = res.get(url)
-    f = io.StringIO(etf.text)
-    etf_df = pd.read_html(f)
-    etf_df = etf_df[0]
-    etf_df = etf_df.drop(columns=['52 Week Range'])
-    st.write(etf_df)
-    return etf_df
    
 #貨幣市場
 def coin():
@@ -392,7 +370,7 @@ st.markdown('''
             
 #狀態列
 st.sidebar.title('選單')
-options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '交易數據','世界指數','今日熱門','熱門ETF','貨幣市場','熱搜趨勢'])
+options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '交易數據','今日熱門','貨幣市場','熱搜趨勢'])
 
 if options == '公司基本資訊':
     st.subheader('公司基本資訊')
@@ -462,40 +440,6 @@ elif options == '交易數據':
         else:
             st.error('請輸入至少一個股票')
 
-elif options == '世界指數':
-    st.subheader('世界指數')
-    world_index()
-    st.subheader('指數查詢')
-    symbol = st.text_input('輸入指數 (要跟上面symbol欄位一樣或複製上面表格symbol欄位上去)', key='single_stock').upper()
-    start_date_single = st.date_input('開始日期', key='start_date_single')
-    end_date_single = st.date_input('结束日期', key='end_date_single')
-    if st.button('查詢'):
-        stock_data = get_stock_data_us(symbol, start_date_single, end_date_single)
-        if stock_data is not None:
-            plot_interactive_candlestick(stock_data)
-            plot_interactive_trend(stock_data)
-            plot_interactive_volume(stock_data)
-        else:
-            st.error("無法獲取指數")
-    st.subheader('指數比較')
-    symbol1 = st.text_input('輸入指數 1(要跟上面symbol欄位一樣)', key='stock1')
-    symbol2 = st.text_input('輸入指數 2(要跟上面symbol欄位一樣)', key='stock2')
-    symbol3 = st.text_input('輸入指數 3(要跟上面symbol欄位一樣)', key='stock3')
-    symbol4 = st.text_input('輸入指數 4(要跟上面symbol欄位一樣)', key='stock4')
-    symbol5 = st.text_input('輸入指數 5(要跟上面symbol欄位一樣)', key='stock5')
-    symbol6 = st.text_input('輸入指數 6(要跟上面symbol欄位一樣)', key='stock6')
-    start_date_multi = st.date_input('開始日期', key='start_date_multi')
-    end_date_multi = st.date_input('結束日期', key='end_date_multi')
-    if st.button('比較'):
-        symbols = [s.upper() for s in [symbol1, symbol2, symbol3, symbol4, symbol5, symbol6] if s]
-        if symbols:
-            stock_data = get_stock_data_us_vs(symbols, start_date_multi, end_date_multi)
-            if stock_data is not None:
-                plot_stock_trend_comparison(stock_data, symbols)
-                plot_stock_volume_chart(stock_data, symbols)
-        else:
-            st.error('請輸入至少一個指數')
-            
 elif options == '今日熱門':
     st.subheader('今日熱門')
     hot_stock()
@@ -533,40 +477,6 @@ elif options == '今日熱門':
                 plot_stock_volume_chart(stock_data,symbols)
         else:
             st.error('請輸入至少一個股票')
-            
-elif options == '熱門ETF':
-    st.subheader('熱門ETF')
-    etf()
-    st.subheader('ETF查詢')
-    symbol = st.text_input('輸入ETF (台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='single_stock').upper()
-    start_date_single = st.date_input('開始日期', key='start_date_single')
-    end_date_single = st.date_input('结束日期', key='end_date_single')
-    if st.button('查詢'):
-        stock_data = get_stock_data_us(symbol,start_date_single,end_date_single)
-        if stock_data is not None:
-            plot_interactive_candlestick(stock_data)
-            plot_interactive_trend(stock_data)
-            plot_interactive_volume(stock_data)
-        else:
-            st.error("無法獲取ETF")
-    st.subheader('ETF比較')
-    symbol1 = st.text_input('輸入ETF 1(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock1')
-    symbol2 = st.text_input('輸入ETF 2(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock2')
-    symbol3 = st.text_input('輸入ETF 3(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock3')
-    symbol4 = st.text_input('輸入ETF 4(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock4')
-    symbol5 = st.text_input('輸入ETF 5(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock5')
-    symbol6 = st.text_input('輸入ETF 6(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock6')
-    start_date_multi = st.date_input('開始日期', key='start_date_multi')
-    end_date_multi = st.date_input('結束日期', key='end_date_multi')
-    if st.button('比較'):
-        symbols = [s.upper() for s in [symbol1, symbol2, symbol3, symbol4, symbol5, symbol6] if s]
-        if symbols:
-            stock_data = get_stock_data_us_vs(symbols,start_date_multi,end_date_multi)
-            if stock_data is not None:
-                plot_stock_trend_comparison(stock_data,symbols)
-                plot_stock_volume_chart(stock_data,symbols)
-        else:
-            st.error('請輸入至少一個ETF')
 
 elif options == '貨幣市場':
     st.subheader('貨幣市場')
