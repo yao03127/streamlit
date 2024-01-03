@@ -4,10 +4,11 @@ import streamlit as st
 import plotly.graph_objs as go
 import requests as res
 import io
+import time
 from googletrans import Translator
 from pytrends.request import TrendReq
+from pytrends.exceptions import ResponseError
 from geopy.geocoders import Nominatim
-
 
 # 獲取公司基本資訊
 def get_company_fundamentals(symbol):
@@ -313,7 +314,7 @@ def loser_stock():
     loser_stock_df = loser_stock_df.drop(columns=['PE Ratio (TTM)', '52 Week Range'])
     st.write(loser_stock_df)
     return loser_stock_df
-   
+  
 #貨幣市場
 def coin():
     url = "https://finance.yahoo.com/currencies/"
@@ -329,29 +330,43 @@ def coin():
 pytrend = TrendReq()
 
 # Set the maximum number of retries
-max_retries = 3
+#max_retries = 3
 
 #關鍵字熱搜
 def fetch_google_trends(keywords, start_date, end_date, timezone):
-    # 根據時區設置
+    hl = 'en-US'  # 默认语言设置
+    geo = 'US'    # 默认地理位置设置为美国
+
+    # 根据时区设置
     if timezone == "台北":
         hl = 'zh-TW'
         geo = 'TW'
-    elif timezone == "紐約":
+    elif timezone == "纽约":
         hl = 'en-US'
-        geo = 'US-NY'
-        
-    # 創建 TrendReq 對象
-    pytrend = TrendReq(hl=hl)
+        geo = 'US'  # 仅使用国家代码
 
-    # 建立請求負載
-    pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
+    try:
+        # 创建 TrendReq 对象
+        pytrend = TrendReq(hl=hl)
 
-    # 獲取隨時間變化的興趣
-    return pytrend.interest_over_time()
+        # 建立请求负载
+        pytrend.build_payload(kw_list=keywords, timeframe=f'{start_date} {end_date}', geo=geo)
+
+        # 获取随时间变化的兴趣
+        return pytrend.interest_over_time()
+    except ResponseError as e:
+        print(f"請求出現錯誤：{str(e)}, hl: {hl}, geo: {geo}")  # 打印错误信息和变量值
+        if "429" in str(e):
+            time.sleep(60)  # 暂停60秒
+            return fetch_google_trends(keywords, start_date, end_date, timezone)  # 重试
+        else:
+            raise  # 其他错误重新抛出
+    except Exception as e:
+        st.error(f"請求出現錯誤：{str(e)}")
+        return pd.DataFrame()  # 返回空的 DataFrame
 
 # Streamlit介面
-st.title('金融數據平台')
+
 st.header("使用說明", divider="rainbow")
 
 st.markdown('''
@@ -363,7 +378,7 @@ st.markdown('''
         - 美元換其他: 直接輸入貨幣縮寫  
         - 其他換美元: 貨幣縮寫 USD，例如，台幣換美金: TWDUSD  
         - 其他換其他: 貨幣縮寫貨幣縮寫，例如，台幣換英鎊: TWDGBP  
-    4. 由於 Google Trends API 有請求上限因此在 "熱搜趨勢" 搜尋時，出現亂碼純屬正常現象  
+    4. 由於 Google Trends API 有請求上限因此在 "熱搜趨勢" 搜尋時，等待過久純屬正常現象    
     5. 本平台僅適用於數據搜尋，不建議任何投資行為                    
 ''')
 
@@ -437,44 +452,6 @@ elif options == '交易數據':
             if stock_data is not None:
                 plot_stock_trend_comparison(stock_data, symbols)
                 plot_stock_volume_chart(stock_data, symbols)
-        else:
-            st.error('請輸入至少一個股票')
-
-elif options == '今日熱門':
-    st.subheader('今日熱門')
-    hot_stock()
-    st.subheader('今日上漲')
-    gainers_stock()
-    st.subheader('今日下跌')
-    loser_stock()   
-    st.subheader('股票查詢')
-    symbol = st.text_input('輸入股票(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='single_stock').upper()
-    start_date_single = st.date_input('開始日期', key='start_date_single')
-    end_date_single = st.date_input('结束日期', key='end_date_single')
-    if st.button('查詢'):
-        stock_data = get_stock_data_us(symbol,start_date_single,end_date_single)
-        if stock_data is not None:
-            plot_interactive_candlestick(stock_data)
-            plot_interactive_trend(stock_data)
-            plot_interactive_volume(stock_data)
-        else:
-            st.error("無法獲取交易數據")
-    st.subheader('個股比較')
-    symbol1 = st.text_input('輸入股票 1(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock1')
-    symbol2 = st.text_input('輸入股票 2(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock2')
-    symbol3 = st.text_input('輸入股票 3(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock3')
-    symbol4 = st.text_input('輸入股票 4(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock4')
-    symbol5 = st.text_input('輸入股票 5(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock5')
-    symbol6 = st.text_input('輸入股票 6(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='stock6')
-    start_date_multi = st.date_input('開始日期', key='start_date_multi')
-    end_date_multi = st.date_input('結束日期', key='end_date_multi')
-    if st.button('比較'):
-        symbols = [s.upper() for s in [symbol1, symbol2, symbol3, symbol4, symbol5, symbol6] if s]
-        if symbols:
-            stock_data = get_stock_data_us_vs(symbols,start_date_multi,end_date_multi)
-            if stock_data is not None:
-                plot_stock_trend_comparison(stock_data,symbols)
-                plot_stock_volume_chart(stock_data,symbols)
         else:
             st.error('請輸入至少一個股票')
 
