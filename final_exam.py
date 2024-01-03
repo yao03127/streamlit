@@ -6,6 +6,8 @@ import requests as res
 import io
 from googletrans import Translator
 from pytrends.request import TrendReq
+from geopy.geocoders import Nominatim
+
 
 # 獲取公司基本資訊
 def get_company_fundamentals(symbol):
@@ -60,8 +62,31 @@ def display_fundamentals(fundamentals):
         df_company_info['Value'] = df_company_info['Value'].apply(lambda x: "{:,.0f}".format(x) if isinstance(x, (int, float)) and x >= 1000 else x)
         st.subheader("公司基本資訊:")
         st.table(df_company_info)
+        st.subheader("公司位置資訊:")
+        display_location(fundamentals)
     else:
         st.error(f" {symbol} 公司的基本訊息")
+
+def display_location(fundamentals):
+    if 'city' in fundamentals and 'country' in fundamentals:
+        city = fundamentals['city']
+        country = fundamentals['country']
+
+        # 使用 Nominatim 服务进行地理编码
+        geolocator = Nominatim(user_agent="streamlit_app")
+        location = geolocator.geocode(f"{city}, {country}")
+
+        if location:
+            latitude = location.latitude
+            longitude = location.longitude
+            # 创建包含经纬度的 DataFrame
+            data = pd.DataFrame({'lat': [latitude], 'lon': [longitude]})
+            # 在 Streamlit 地图上显示位置
+            st.map(data)
+        else:
+            st.error("無法找到公司位置")
+    else:
+        st.error("缺少或國家")
 
 
 #獲取歷史交易數據
@@ -114,8 +139,20 @@ def plot_interactive_candlestick(stock_data):
 #繪製趨勢圖
 def plot_interactive_trend(stock_data):
     fig = go.Figure()
+
+    # 收盤價線
     fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Close'], mode='lines', name='收盤價'))
+
+    # 最高價線
+    fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['High'], mode='lines', name='最高價'))
+
+    # 最低價線
+    fig.add_trace(go.Scatter(x=stock_data.index, y=stock_data['Low'], mode='lines', name='最低價'))
+
+    # 更新佈局
     fig.update_layout(xaxis_title='日期', yaxis_title='', title='趨勢圖')
+
+    # 顯示圖表
     st.plotly_chart(fig, use_container_width=True)
 
 #繪製交易量柱狀圖
@@ -355,7 +392,7 @@ st.markdown('''
             
 #狀態列
 st.sidebar.title('選單')
-options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '交易數據','世界指數','今日熱門','熱門ETF','貨幣市場','熱搜趨勢','使用者意見反饋'])
+options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '交易數據','世界指數','今日熱門','熱門ETF','貨幣市場','熱搜趨勢'])
 
 if options == '公司基本資訊':
     st.subheader('公司基本資訊')
@@ -603,8 +640,3 @@ elif options == '熱搜趨勢':
 
         else:
             st.write("無數據可用")
-
-elif options == '使用者意見反饋':
-    st.subheader('使用者意見反饋')
-    st.text('如有使用疑問或需要改善、希望增加功能地方請至下方連結填寫')
-    st.write("https://forms.gle/RXJo9YX7UtkCvt9bA")
