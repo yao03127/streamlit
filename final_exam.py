@@ -5,6 +5,8 @@ import plotly.graph_objs as go
 import requests as res
 import io
 import time
+import folium
+from streamlit_folium import folium_static
 from googletrans import Translator
 from pytrends.request import TrendReq
 from pytrends.exceptions import ResponseError
@@ -78,16 +80,16 @@ def display_location(fundamentals):
         location = geolocator.geocode(f"{city}, {country}")
 
         if location:
-            latitude = location.latitude
-            longitude = location.longitude
-            # 创建包含经纬度的 DataFrame
-            data = pd.DataFrame({'lat': [latitude], 'lon': [longitude]})
-            # 在 Streamlit 地图上显示位置
-            st.map(data)
+            # 使用 folium 创建地图，并将其定位到公司位置
+            map = folium.Map(location=[location.latitude, location.longitude], zoom_start=10)
+            # 添加标记
+            folium.Marker([location.latitude, location.longitude], popup=f"{city}, {country}").add_to(map)
+            # 使用 streamlit-folium 显示地图
+            folium_static(map)
         else:
             st.error("無法找到公司位置")
     else:
-        st.error("缺少或國家")
+        st.error("缺少城市或國家")
 
 
 #獲取歷史交易數據
