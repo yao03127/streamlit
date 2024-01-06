@@ -329,9 +329,6 @@ def coin():
 # 初始化 Google Trends
 pytrend = TrendReq()
 
-# Set the maximum number of retries
-#max_retries = 3
-
 #關鍵字熱搜
 def fetch_google_trends(keywords, start_date, end_date, timezone):
     hl = 'en-US'  # 默认语言设置
@@ -385,7 +382,7 @@ st.markdown('''
             
 #狀態列
 st.sidebar.title('選單')
-options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '交易數據','今日熱門','貨幣市場','熱搜趨勢'])
+options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '今日熱門','交易數據','貨幣市場','熱搜趨勢'])
 
 if options == '公司基本資訊':
     st.subheader('公司基本資訊')
@@ -423,6 +420,14 @@ elif options == '公司財報查詢(英文)':
         else:
             st.error("無法獲取財報")
 
+elif options == '今日熱門':
+    st.subheader("今日交易量最多前25名")
+    hot_stock()
+    st.subheader("今日上漲前25名")
+    gainers_stock()
+    st.subheader("今日下跌前25名")
+    loser_stock()
+    
 elif options == '交易數據':
     st.subheader('交易數據查詢')
     symbol = st.text_input('輸入股票(台股/上市 請加上.tw,台股/上櫃 請加上.two)', key='single_stock').upper()
