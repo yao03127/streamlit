@@ -384,7 +384,7 @@ st.markdown('''
             
 #狀態列
 st.sidebar.title('選單')
-options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '今日熱門','交易數據','貨幣市場','熱搜趨勢'])
+options = st.sidebar.selectbox('選擇功能:', ['公司基本資訊','公司財報查詢(中文)','公司財報查詢(英文)', '今日熱門(美國)','交易數據','貨幣市場','熱搜趨勢'])
 
 if options == '公司基本資訊':
     st.subheader('公司基本資訊')
