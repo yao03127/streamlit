@@ -422,7 +422,7 @@ elif options == '公司財報查詢(英文)':
         else:
             st.error("無法獲取財報")
 
-elif options == '今日熱門':
+elif options == '今日熱門(美國)':
     st.subheader("今日交易量最多前25名")
     hot_stock()
     st.subheader("今日上漲前25名")
